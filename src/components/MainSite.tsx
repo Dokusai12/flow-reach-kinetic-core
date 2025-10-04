@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
-import ThreeScene from "./ThreeScene";
+import AdvancedThreeScene from "./AdvancedThreeScene";
 import ErrorBoundary from "./ErrorBoundary";
 import logo from "@/assets/flowreach-logo.png";
+import { gsap } from "gsap";
 
 const MainSite = () => {
   const navigate = useNavigate();
@@ -103,7 +104,7 @@ const MainSite = () => {
       if (step < processSteps.length - 1) {
         step++;
         setCurrentProcess(step);
-      } else {
+    } else {
         clearInterval(interval);
         setIsAnimating(false);
       }
@@ -125,7 +126,11 @@ const MainSite = () => {
       {/* Fixed 3D Background */}
       <div className="fixed inset-0 z-0 w-full h-full">
         <ErrorBoundary>
-          <ThreeScene scrollProgress={scrollProgress} industry={selectedIndustry} />
+          <AdvancedThreeScene 
+            scrollProgress={scrollProgress} 
+            industry={selectedIndustry || "sales"} 
+            mousePos={mousePosition}
+          />
         </ErrorBoundary>
       </div>
 
@@ -173,13 +178,13 @@ const MainSite = () => {
               Pricing
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all duration-300 group-hover:w-full" />
             </button>
-            <button
+              <button
               onClick={() => contactRef.current?.scrollIntoView({ behavior: 'smooth' })}
               className="text-sm font-medium hover:text-cyan-400 transition-all duration-300 relative group"
-            >
+              >
               Contact
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all duration-300 group-hover:w-full" />
-            </button>
+              </button>
             <Button 
               size="sm" 
               className="ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-black font-semibold transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/25"
@@ -216,21 +221,21 @@ const MainSite = () => {
             >
               Pricing
             </button>
-            <button
-              onClick={() => {
+              <button
+                onClick={() => {
                 contactRef.current?.scrollIntoView({ behavior: 'smooth' });
-                setMobileMenuOpen(false);
-              }}
+                  setMobileMenuOpen(false);
+                }}
               className="block text-sm font-medium hover:text-cyan-400 transition-all duration-300 w-full text-left py-2 px-3 rounded-lg hover:bg-white/5"
-            >
+              >
               Contact
-            </button>
+              </button>
             <Button 
               size="sm" 
               className="w-full mt-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-black font-semibold"
               onClick={() => {
                 contactRef.current?.scrollIntoView({ behavior: 'smooth' });
-                setMobileMenuOpen(false);
+              setMobileMenuOpen(false);
               }}
             >
               Get Started

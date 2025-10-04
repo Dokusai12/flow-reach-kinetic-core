@@ -24,9 +24,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<CleanSplitLanding />} />
+          <Route path="/" element={<MainSite />} />
           <Route path="/chat" element={<ChatExperience />} />
-          <Route path="/site" element={<MainSite />} />
           <Route path="/test" element={<ThreeTest />} />
           <Route path="/simple" element={<SimpleThreeTest />} />
           <Route path="/case-studies" element={<CaseStudiesPage />} />
