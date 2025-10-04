@@ -672,6 +672,196 @@ const MainSite = () => {
         </div>
       </section>
 
+      {/* AI Transformation Showcase Section */}
+      <section className="min-h-screen flex items-center justify-center relative py-20">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="mb-16">
+            <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 px-6 py-3 text-lg font-medium mb-8">
+              <Brain className="w-5 h-5 mr-2" />
+              AI Transformation in Action
+            </Badge>
+            <h2 className="text-6xl md:text-8xl font-bold mb-8">
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
+                Before vs After
+              </span>
+            </h2>
+            <p className="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              See the dramatic transformation when AI takes over your business processes
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            {/* Before */}
+            <Card className="bg-red-900/20 border-red-500/30 p-8">
+              <CardHeader>
+                <CardTitle className="text-3xl text-red-400 mb-4">❌ Before AI</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-left">
+                  <p className="text-gray-300 text-lg">• Manual lead qualification: 2 hours/day</p>
+                  <p className="text-gray-300 text-lg">• Email follow-ups: 1 hour/day</p>
+                  <p className="text-gray-300 text-lg">• Data entry: 3 hours/day</p>
+                  <p className="text-gray-300 text-lg">• Report generation: 2 hours/day</p>
+                  <p className="text-gray-300 text-lg">• Customer support: 6 hours/day</p>
+                </div>
+                <div className="text-center pt-4">
+                  <p className="text-2xl font-bold text-red-400">14 hours/day of manual work</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* After */}
+            <Card className="bg-green-900/20 border-green-500/30 p-8">
+              <CardHeader>
+                <CardTitle className="text-3xl text-green-400 mb-4">✅ After AI</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-left">
+                  <p className="text-gray-300 text-lg">• AI lead qualification: 5 minutes/day</p>
+                  <p className="text-gray-300 text-lg">• Automated follow-ups: 0 minutes/day</p>
+                  <p className="text-gray-300 text-lg">• AI data processing: 10 minutes/day</p>
+                  <p className="text-gray-300 text-lg">• Auto-generated reports: 0 minutes/day</p>
+                  <p className="text-gray-300 text-lg">• AI customer support: 30 minutes/day</p>
+                </div>
+                <div className="text-center pt-4">
+                  <p className="text-2xl font-bold text-green-400">45 minutes/day total</p>
+                  <p className="text-lg text-green-300">97% time saved!</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Industry-Specific Solutions Section */}
+      <section className="min-h-screen flex items-center justify-center relative py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-6 py-3 text-lg font-medium mb-8">
+              <Target className="w-5 h-5 mr-2" />
+              Industry-Specific Solutions
+            </Badge>
+            <h2 className="text-6xl md:text-8xl font-bold mb-8">
+              <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                Tailored AI Solutions
+              </span>
+            </h2>
+            <p className="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              Every industry has unique challenges. Our AI solutions are customized for your specific needs.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {industries.map((industry) => (
+              <Card 
+                key={industry.id}
+                className={`bg-gradient-to-br ${industry.color} p-8 cursor-pointer hover:scale-105 transition-all duration-500 group`}
+                onClick={() => setSelectedIndustry(industry.id)}
+              >
+                <CardContent className="text-center">
+                  <industry.icon className="w-16 h-16 mx-auto mb-6 text-white group-hover:scale-110 transition-transform duration-300" />
+                  <h3 className="text-3xl font-bold text-white mb-4">{industry.name}</h3>
+                  <p className="text-white/90 text-lg leading-relaxed">
+                    {industry.id === 'sales' && "Automate lead generation, qualification, and closing processes"}
+                    {industry.id === 'marketing' && "AI-powered content creation and campaign optimization"}
+                    {industry.id === 'operations' && "Streamline workflows and automate routine tasks"}
+                    {industry.id === 'customer-service' && "24/7 AI customer support and issue resolution"}
+                    {industry.id === 'data' && "Intelligent data processing and actionable insights"}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ROI Calculator Section */}
+      <section className="min-h-screen flex items-center justify-center relative py-20">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <div className="mb-16">
+            <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 px-6 py-3 text-lg font-medium mb-8">
+              <DollarSign className="w-5 h-5 mr-2" />
+              Calculate Your ROI
+            </Badge>
+            <h2 className="text-6xl md:text-8xl font-bold mb-8">
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                See Your Savings
+              </span>
+            </h2>
+            <p className="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              Calculate how much time and money AI automation can save your business
+            </p>
+          </div>
+
+          <Card className="bg-gray-800/50 border-gray-700 p-12">
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-12">
+                <div className="space-y-6">
+                  <h3 className="text-3xl font-bold text-white mb-6">Input Your Numbers</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-lg font-medium text-gray-300 mb-2">Team Size</label>
+                      <input 
+                        type="number" 
+                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white text-lg"
+                        placeholder="e.g., 10"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-lg font-medium text-gray-300 mb-2">Average Hourly Rate ($)</label>
+                      <input 
+                        type="number" 
+                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white text-lg"
+                        placeholder="e.g., 50"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-lg font-medium text-gray-300 mb-2">Hours Spent on Manual Tasks</label>
+                      <input 
+                        type="number" 
+                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white text-lg"
+                        placeholder="e.g., 40"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <h3 className="text-3xl font-bold text-white mb-6">Your AI Savings</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-6">
+                      <p className="text-2xl font-bold text-green-400">$50,000+</p>
+                      <p className="text-gray-300">Monthly Savings</p>
+                    </div>
+                    
+                    <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-6">
+                      <p className="text-2xl font-bold text-blue-400">35 hours</p>
+                      <p className="text-gray-300">Time Saved Per Week</p>
+                    </div>
+                    
+                    <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-6">
+                      <p className="text-2xl font-bold text-purple-400">600%</p>
+                      <p className="text-gray-300">ROI in First Year</p>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-black font-bold text-xl py-4"
+                  >
+                    Get Detailed Analysis
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
       {/* Enhanced Contact Section with 3D Effects */}
       <section 
         ref={contactRef}

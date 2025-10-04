@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
 import { OrbitControls, Text, MeshDistortMaterial, useTexture } from '@react-three/drei';
+import { EffectComposer, Bloom, ChromaticAberration, Vignette, Noise } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 
@@ -57,29 +58,40 @@ const GlowShader = {
   side: THREE.DoubleSide
 };
 
-// Advanced Particle System (1000+ particles)
+// Ultra-Advanced Particle System (2000+ particles with multiple layers)
 function MasterclassParticles({ scrollProgress, mousePos }: { scrollProgress: number; mousePos: { x: number; y: number } }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const count = 1000; // 5x more particles than before
+  const count = 2000; // Even more particles for density
   const dummy = useMemo(() => new THREE.Object3D(), []);
   
-  // Create particle data with advanced properties
+  // Create particle data with advanced properties and multiple layers
   const particles = useMemo(() => {
-    return Array.from({ length: count }).map(() => ({
-      position: new THREE.Vector3(
-        (Math.random() - 0.5) * 50, // Larger space
-        (Math.random() - 0.5) * 50,
-        (Math.random() - 0.5) * 50
-      ),
-      velocity: new THREE.Vector3(
-        (Math.random() - 0.5) * 0.02,
-        (Math.random() - 0.5) * 0.02,
-        (Math.random() - 0.5) * 0.02
-      ),
-      size: 0.02 + Math.random() * 0.08,
-      color: new THREE.Color().setHSL(Math.random(), 0.8, 0.6),
-      phase: Math.random() * Math.PI * 2
-    }));
+    return Array.from({ length: count }).map((_, i) => {
+      const layer = Math.floor(i / (count / 3)); // 3 layers
+      const layerOffset = layer * 20; // Space layers apart
+      
+      return {
+        position: new THREE.Vector3(
+          (Math.random() - 0.5) * 80 + layerOffset, // Much larger space
+          (Math.random() - 0.5) * 80,
+          (Math.random() - 0.5) * 80
+        ),
+        velocity: new THREE.Vector3(
+          (Math.random() - 0.5) * 0.03,
+          (Math.random() - 0.5) * 0.03,
+          (Math.random() - 0.5) * 0.03
+        ),
+        size: 0.03 + Math.random() * 0.12,
+        color: new THREE.Color().setHSL(
+          (Math.random() * 0.3 + 0.5), // Blue-cyan range
+          0.9, 
+          0.7 + Math.random() * 0.3
+        ),
+        phase: Math.random() * Math.PI * 2,
+        layer: layer,
+        speed: 0.5 + Math.random() * 1.5
+      };
+    });
   }, []);
   
   useFrame((state) => {
@@ -88,37 +100,51 @@ function MasterclassParticles({ scrollProgress, mousePos }: { scrollProgress: nu
     const time = state.clock.getElapsedTime();
     
     particles.forEach((particle, i) => {
-      // Advanced particle movement with mouse interaction
-      const mouseInfluence = 0.3;
+      // Enhanced mouse interaction with scroll influence
+      const mouseInfluence = 0.4 + scrollProgress * 0.3;
       const mx = (mousePos.x / window.innerWidth - 0.5) * mouseInfluence;
       const my = (mousePos.y / window.innerHeight - 0.5) * mouseInfluence;
       
-      // Update position with velocity and mouse influence
-      particle.position.add(particle.velocity);
-      particle.position.x += mx;
-      particle.position.y += my;
+      // Layer-based movement patterns
+      const layerSpeed = particle.speed * (1 + particle.layer * 0.3);
       
-      // Add wave motion
-      particle.position.y += Math.sin(time * 0.5 + particle.phase) * 0.01;
-      particle.position.z += Math.cos(time * 0.3 + particle.phase) * 0.01;
+      // Update position with enhanced velocity and mouse influence
+      particle.position.add(particle.velocity.clone().multiplyScalar(layerSpeed));
+      particle.position.x += mx * (1 + particle.layer * 0.2);
+      particle.position.y += my * (1 + particle.layer * 0.2);
       
-      // Boundary checking with smooth wrapping
-      if (particle.position.x > 25) particle.position.x = -25;
-      if (particle.position.x < -25) particle.position.x = 25;
-      if (particle.position.y > 25) particle.position.y = -25;
-      if (particle.position.y < -25) particle.position.y = 25;
-      if (particle.position.z > 25) particle.position.z = -25;
-      if (particle.position.z < -25) particle.position.z = 25;
+      // Complex wave motion based on layer
+      const waveIntensity = 0.02 + particle.layer * 0.01;
+      particle.position.y += Math.sin(time * 0.8 + particle.phase) * waveIntensity;
+      particle.position.z += Math.cos(time * 0.6 + particle.phase) * waveIntensity;
+      particle.position.x += Math.sin(time * 0.4 + particle.phase * 0.7) * waveIntensity * 0.5;
       
-      // Scale based on scroll and time
-      const scale = particle.size * (1 + scrollProgress * 0.8 + Math.sin(time * 2 + i) * 0.2);
+      // Scroll-based particle behavior
+      const scrollInfluence = scrollProgress * 2;
+      particle.position.y += Math.sin(time * 0.3 + i * 0.1) * scrollInfluence * 0.1;
+      
+      // Enhanced boundary checking with layer-based wrapping
+      const boundary = 40 + particle.layer * 10;
+      if (particle.position.x > boundary) particle.position.x = -boundary;
+      if (particle.position.x < -boundary) particle.position.x = boundary;
+      if (particle.position.y > boundary) particle.position.y = -boundary;
+      if (particle.position.y < -boundary) particle.position.y = boundary;
+      if (particle.position.z > boundary) particle.position.z = -boundary;
+      if (particle.position.z < -boundary) particle.position.z = boundary;
+      
+      // Dynamic scaling based on scroll, time, and layer
+      const baseScale = particle.size * (1 + scrollProgress * 1.2);
+      const timeScale = 1 + Math.sin(time * 3 + i * 0.1) * 0.3;
+      const layerScale = 1 + particle.layer * 0.2;
+      const scale = baseScale * timeScale * layerScale;
+      
       dummy.scale.set(scale, scale, scale);
       
-      // Position and rotation
+      // Enhanced rotation with layer-based patterns
       dummy.position.copy(particle.position);
-      dummy.rotation.x = time * 0.5 + i;
-      dummy.rotation.y = time * 0.3 + i;
-      dummy.rotation.z = time * 0.2 + i;
+      dummy.rotation.x = time * (0.8 + particle.layer * 0.2) + i * 0.1;
+      dummy.rotation.y = time * (0.6 + particle.layer * 0.1) + i * 0.15;
+      dummy.rotation.z = time * (0.4 + particle.layer * 0.05) + i * 0.2;
       
       dummy.updateMatrix();
       meshRef.current!.setMatrixAt(i, dummy.matrix);
@@ -145,7 +171,7 @@ function MasterclassParticles({ scrollProgress, mousePos }: { scrollProgress: nu
   );
 }
 
-// AI Workflow Visualization with Advanced Materials
+// AI Workflow Visualization with Advanced Materials and Dynamic Connections
 function WorkflowVisualization({ 
   industry, 
   progress 
@@ -154,79 +180,140 @@ function WorkflowVisualization({
   progress: number 
 }) {
   const groupRef = useRef<THREE.Group>(null);
+  const connectionRefs = useRef<THREE.Mesh[]>([]);
   
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
-      groupRef.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.2) * 0.5;
+      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.05;
+      groupRef.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.15) * 0.3;
     }
+    
+    // Animate connection lines
+    connectionRefs.current.forEach((mesh, i) => {
+      if (mesh) {
+        const time = state.clock.getElapsedTime();
+        const scale = 1 + Math.sin(time * 2 + i) * 0.1;
+        mesh.scale.setScalar(scale);
+      }
+    });
   });
   
   const workflows = {
-    sales: ["Lead Gen", "Qualify", "Nurture", "Close", "Expand"],
-    marketing: ["Create", "Campaign", "Analyze", "Optimize", "Scale"],
-    operations: ["Plan", "Execute", "Monitor", "Optimize", "Deliver"],
-    "customer-service": ["Receive", "Route", "Resolve", "Follow-up", "Improve"],
-    data: ["Collect", "Clean", "Analyze", "Visualize", "Automate"]
+    sales: ["Lead Gen", "Qualify", "Nurture", "Close", "Expand", "Retain", "Upsell", "Referral"],
+    marketing: ["Create", "Campaign", "Analyze", "Optimize", "Scale", "Convert", "Retarget", "Grow"],
+    operations: ["Plan", "Execute", "Monitor", "Optimize", "Deliver", "Track", "Improve", "Scale"],
+    "customer-service": ["Receive", "Route", "Resolve", "Follow-up", "Improve", "Learn", "Predict", "Prevent"],
+    data: ["Collect", "Clean", "Analyze", "Visualize", "Automate", "Predict", "Optimize", "Scale"]
   };
   
   const steps = workflows[industry as keyof typeof workflows] || workflows.sales;
   const activeStep = Math.floor(progress * steps.length);
+  const radius = 8; // Increased radius for better spacing
   
   return (
-    <group ref={groupRef} position={[0, -3, 0]}>
+    <group ref={groupRef} position={[0, -4, 0]}>
       {steps.map((step, i) => {
         const angle = (i / steps.length) * Math.PI * 2;
-        const radius = 6;
         const x = Math.cos(angle) * radius;
         const z = Math.sin(angle) * radius;
         const isActive = i <= activeStep;
+        const isNext = i === activeStep + 1;
         
         return (
           <group key={i} position={[x, 0, z]}>
-            {/* Step Node with Custom Shader */}
+            {/* Step Node with Enhanced Custom Shader */}
             <mesh>
-              <icosahedronGeometry args={[1, 1]} />
+              <icosahedronGeometry args={[1.2, 2]} />
               <shaderMaterial
                 vertexShader={GlowShader.vertexShader}
                 fragmentShader={GlowShader.fragmentShader}
                 uniforms={{
                   time: { value: 0 },
-                  color: { value: new THREE.Color(isActive ? "#06b6d4" : "#374151") },
-                  intensity: { value: isActive ? 1.2 : 0.3 }
+                  color: { value: new THREE.Color(isActive ? "#06b6d4" : isNext ? "#8b5cf6" : "#374151") },
+                  intensity: { value: isActive ? 1.5 : isNext ? 0.8 : 0.2 }
                 }}
                 transparent
-                opacity={isActive ? 0.9 : 0.4}
+                opacity={isActive ? 0.95 : isNext ? 0.6 : 0.3}
               />
             </mesh>
             
-            {/* Step Label */}
+            {/* Glow Ring around active nodes */}
+            {isActive && (
+              <mesh>
+                <torusGeometry args={[1.8, 0.1, 8, 32]} />
+                <meshStandardMaterial
+                  color="#06b6d4"
+                  emissive="#06b6d4"
+                  emissiveIntensity={0.8}
+                  transparent
+                  opacity={0.6}
+                />
+              </mesh>
+            )}
+            
+            {/* Step Label with better positioning */}
             <Text
-              position={[0, -2, 0]}
-              fontSize={0.4}
-              color={isActive ? "#06b6d4" : "#ffffff"}
+              position={[0, -2.5, 0]}
+              fontSize={0.35}
+              color={isActive ? "#06b6d4" : isNext ? "#8b5cf6" : "#ffffff"}
               anchorX="center"
               anchorY="middle"
-              outlineWidth={0.02}
+              outlineWidth={0.03}
               outlineColor="#000000"
             >
               {step}
             </Text>
             
-            {/* Connection Line */}
+            {/* Enhanced Connection Lines - Much longer and more dynamic */}
             {i < steps.length - 1 && (
-              <mesh rotation={[0, angle + Math.PI / steps.length, 0]} position={[radius * 0.4, 0, 0]}>
-                <boxGeometry args={[radius * 0.8, 0.1, 0.1]} />
+              <mesh 
+                ref={(el) => {
+                  if (el) connectionRefs.current[i] = el;
+                }}
+                rotation={[0, angle + Math.PI / steps.length, 0]} 
+                position={[radius * 0.5, 0, 0]}
+              >
+                <boxGeometry args={[radius * 1.2, 0.08, 0.08]} />
                 <meshStandardMaterial
-                  color={isActive ? "#06b6d4" : "#4b5563"}
-                  emissive={isActive ? "#06b6d4" : "#000000"}
-                  emissiveIntensity={isActive ? 0.5 : 0}
+                  color={isActive ? "#06b6d4" : isNext ? "#8b5cf6" : "#4b5563"}
+                  emissive={isActive ? "#06b6d4" : isNext ? "#8b5cf6" : "#000000"}
+                  emissiveIntensity={isActive ? 0.8 : isNext ? 0.4 : 0}
+                  transparent
+                  opacity={isActive ? 0.9 : isNext ? 0.6 : 0.3}
+                />
+              </mesh>
+            )}
+            
+            {/* Data flow particles between nodes */}
+            {isActive && i < steps.length - 1 && (
+              <mesh position={[radius * 0.25, 0, 0]}>
+                <sphereGeometry args={[0.15, 8, 8]} />
+                <meshStandardMaterial
+                  color="#22c55e"
+                  emissive="#22c55e"
+                  emissiveIntensity={1.0}
                 />
               </mesh>
             )}
           </group>
         );
       })}
+      
+      {/* Central Hub with pulsing effect */}
+      <mesh position={[0, 0, 0]}>
+        <octahedronGeometry args={[0.8, 1]} />
+        <shaderMaterial
+          vertexShader={GlowShader.vertexShader}
+          fragmentShader={GlowShader.fragmentShader}
+          uniforms={{
+            time: { value: 0 },
+            color: { value: new THREE.Color('#ffffff') },
+            intensity: { value: 1.0 }
+          }}
+          transparent
+          opacity={0.8}
+        />
+      </mesh>
     </group>
   );
 }
@@ -301,26 +388,56 @@ function ROIVisualization({ scrollProgress }: { scrollProgress: number }) {
   );
 }
 
-// Cinematic Camera Controller
+// Cinematic Camera Controller with Extended Scroll Journey
 function CinematicCamera({ scrollProgress, mousePos }: { scrollProgress: number; mousePos: { x: number; y: number } }) {
   const { camera } = useThree();
   
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     
-    // Smooth camera movement based on scroll and mouse
-    const targetX = (mousePos.x / window.innerWidth - 0.5) * 3;
-    const targetY = (mousePos.y / window.innerHeight - 0.5) * 2;
+    // Enhanced mouse influence
+    const targetX = (mousePos.x / window.innerWidth - 0.5) * 4;
+    const targetY = (mousePos.y / window.innerHeight - 0.5) * 3;
     
-    // Cinematic camera path
-    camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetX, 0.02);
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, 5 - scrollProgress * 8 + targetY, 0.02);
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, 15 - scrollProgress * 10, 0.02);
+    // Extended cinematic camera path - much longer journey
+    const scrollPhase = scrollProgress * 3; // Extend scroll range
     
-    // Look at target with smooth interpolation
+    // Multi-stage camera movement
+    let cameraX, cameraY, cameraZ;
+    
+    if (scrollPhase < 1) {
+      // Stage 1: Overview - High and wide
+      cameraX = THREE.MathUtils.lerp(0, targetX * 0.5, scrollPhase);
+      cameraY = THREE.MathUtils.lerp(8, 6 + targetY, scrollPhase);
+      cameraZ = THREE.MathUtils.lerp(20, 18, scrollPhase);
+    } else if (scrollPhase < 2) {
+      // Stage 2: Approach - Moving closer to workflow
+      const localProgress = (scrollPhase - 1);
+      cameraX = THREE.MathUtils.lerp(targetX * 0.5, targetX * 1.5, localProgress);
+      cameraY = THREE.MathUtils.lerp(6 + targetY, 2 + targetY, localProgress);
+      cameraZ = THREE.MathUtils.lerp(18, 12, localProgress);
+    } else {
+      // Stage 3: Immersive - Inside the workflow
+      const localProgress = (scrollPhase - 2);
+      cameraX = THREE.MathUtils.lerp(targetX * 1.5, targetX * 2, localProgress);
+      cameraY = THREE.MathUtils.lerp(2 + targetY, -1 + targetY, localProgress);
+      cameraZ = THREE.MathUtils.lerp(12, 8, localProgress);
+    }
+    
+    // Smooth camera transitions
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, cameraX, 0.015);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, cameraY, 0.015);
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, cameraZ, 0.015);
+    
+    // Dynamic look-at target based on scroll progress
     const lookTarget = new THREE.Vector3(0, 0, 0);
-    lookTarget.x += targetX * 0.3;
-    lookTarget.y += targetY * 0.3;
+    lookTarget.x += targetX * 0.2;
+    lookTarget.y += targetY * 0.2;
+    
+    // Add subtle camera shake for cinematic effect
+    const shakeIntensity = 0.02;
+    lookTarget.x += Math.sin(time * 10) * shakeIntensity;
+    lookTarget.y += Math.cos(time * 8) * shakeIntensity;
     
     camera.lookAt(lookTarget);
   });
@@ -379,7 +496,7 @@ function Scene({
   );
 }
 
-// Main Component Export
+// Main Component Export with Post-Processing
 export default function MasterclassThreeScene({
   scrollProgress,
   industry,
@@ -392,7 +509,7 @@ export default function MasterclassThreeScene({
   return (
     <div className="w-full h-full absolute inset-0" style={{ pointerEvents: 'none' }}>
       <Canvas
-        camera={{ position: [0, 5, 15], fov: 60 }}
+        camera={{ position: [0, 8, 20], fov: 50 }}
         style={{ background: 'transparent', width: '100%', height: '100%' }}
         gl={{ 
           antialias: true, 
@@ -404,6 +521,30 @@ export default function MasterclassThreeScene({
         performance={{ min: 0.5 }} // Maintain 60fps
       >
         <Scene scrollProgress={scrollProgress} industry={industry} mousePos={mousePos} />
+        
+        {/* Post-Processing Effects for Cinematic Look */}
+        <EffectComposer>
+          <Bloom
+            intensity={0.8 + scrollProgress * 0.4}
+            luminanceThreshold={0.7}
+            luminanceSmoothing={0.025}
+            mipmapBlur={true}
+          />
+          <ChromaticAberration
+            offset={[0.002, 0.002]}
+            radialModulation={true}
+            modulationOffset={0.15}
+          />
+          <Vignette
+            eskil={false}
+            offset={0.1}
+            darkness={0.3 + scrollProgress * 0.2}
+          />
+          <Noise
+            opacity={0.02}
+            premultiply={true}
+          />
+        </EffectComposer>
       </Canvas>
     </div>
   );
