@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
-import ThreeScene from "./ThreeScene";
-import ErrorBoundary from "./ErrorBoundary";
+// import ThreeScene from "./ThreeScene";
+// import ErrorBoundary from "./ErrorBoundary";
 import logo from "@/assets/flowreach-logo.png";
 
 const MainSite = () => {
@@ -122,11 +122,9 @@ const MainSite = () => {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* Fixed 3D Background */}
-      <div className="fixed inset-0 z-0 w-full h-full">
-        <ErrorBoundary>
-          <ThreeScene scrollProgress={scrollProgress} industry={selectedIndustry} />
-        </ErrorBoundary>
+      {/* Fixed 3D Background - Temporarily Disabled */}
+      <div className="fixed inset-0 z-0 w-full h-full bg-gradient-to-br from-black via-gray-900 to-black">
+        {/* Three.js temporarily disabled for debugging */}
       </div>
 
       {/* Mouse Follower */}
