@@ -8,6 +8,7 @@ import ChatExperience from "./components/ChatExperience";
 import MainSite from "./components/MainSite";
 import MainSiteFallback from "./components/MainSiteFallback";
 import ThreeTest from "./components/ThreeTest";
+import SimpleThreeTest from "./components/SimpleThreeTest";
 import CaseStudiesPage from "./pages/CaseStudiesPage";
 import ProcessPage from "./pages/ProcessPage";
 import AboutPage from "./pages/AboutPage";
@@ -24,9 +25,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<SplitLanding />} />
           <Route path="/chat" element={<ChatExperience />} />
-          <Route path="/site" element={<MainSiteFallback />} />
-          <Route path="/site-3d" element={<MainSite />} />
+          <Route path="/site" element={<MainSite />} />
           <Route path="/test" element={<ThreeTest />} />
+          <Route path="/simple" element={<SimpleThreeTest />} />
           <Route path="/case-studies" element={<CaseStudiesPage />} />
           <Route path="/process" element={<ProcessPage />} />
           <Route path="/about" element={<AboutPage />} />

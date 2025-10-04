@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import ThreeScene from "./ThreeScene";
+import ErrorBoundary from "./ErrorBoundary";
 import logo from "@/assets/flowreach-logo.png";
 
 const MainSite = () => {
@@ -122,8 +123,10 @@ const MainSite = () => {
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
       {/* Fixed 3D Background */}
-      <div className="fixed inset-0 z-0">
-        <ThreeScene scrollProgress={scrollProgress} industry={selectedIndustry} />
+      <div className="fixed inset-0 z-0 w-full h-full">
+        <ErrorBoundary>
+          <ThreeScene scrollProgress={scrollProgress} industry={selectedIndustry} />
+        </ErrorBoundary>
       </div>
 
       {/* Mouse Follower */}

@@ -1,31 +1,36 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Text, Sphere, Box, Torus, useScroll } from '@react-three/drei';
+import { OrbitControls, Text, Sphere, Box } from '@react-three/drei';
 import * as THREE from 'three';
 
-// 3D Data Flow Particles - Simplified
+// 3D Data Flow Particles
 function DataParticles({ scrollProgress }: { scrollProgress: number }) {
   const groupRef = useRef<THREE.Group>(null);
   
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
+      groupRef.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.5;
     }
   });
 
   return (
     <group ref={groupRef}>
-      {Array.from({ length: 50 }).map((_, i) => (
+      {Array.from({ length: 30 }).map((_, i) => (
         <Sphere
           key={i}
-          args={[0.05, 8, 8]}
+          args={[0.1, 8, 8]}
           position={[
-            (Math.random() - 0.5) * 20,
-            (Math.random() - 0.5) * 20,
-            (Math.random() - 0.5) * 20
+            (Math.random() - 0.5) * 15,
+            (Math.random() - 0.5) * 15,
+            (Math.random() - 0.5) * 15
           ]}
         >
-          <meshBasicMaterial color="#06b6d4" transparent opacity={0.6} />
+          <meshBasicMaterial 
+            color="#06b6d4" 
+            transparent 
+            opacity={0.6 + scrollProgress * 0.4}
+          />
         </Sphere>
       ))}
     </group>
@@ -39,7 +44,6 @@ function BusinessProcess({ industry, progress }: { industry: string; progress: n
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.2;
-      groupRef.current.position.y = Math.sin(state.clock.getElapsedTime()) * 0.5;
     }
   });
 
@@ -55,7 +59,11 @@ function BusinessProcess({ industry, progress }: { industry: string; progress: n
       {processSteps.map((step, index) => (
         <group key={index} position={step.position as [number, number, number]}>
           <Box args={[0.5, 0.5, 0.5]} position={[0, 0, 0]}>
-            <meshStandardMaterial color={step.color} />
+            <meshStandardMaterial 
+              color={step.color} 
+              emissive={step.color}
+              emissiveIntensity={0.2}
+            />
           </Box>
           <Text
             position={[0, -1, 0]}
@@ -67,7 +75,10 @@ function BusinessProcess({ industry, progress }: { industry: string; progress: n
             {step.label}
           </Text>
           {index < processSteps.length - 1 && (
-            <Box args={[1.5, 0.1, 0.1]} position={[1, 0, 0]}>
+            <Box 
+              args={[1.5, 0.1, 0.1]} 
+              position={[1, 0, 0]}
+            >
               <meshStandardMaterial 
                 color={progress > index ? '#06b6d4' : '#374151'} 
                 transparent 
@@ -81,13 +92,14 @@ function BusinessProcess({ industry, progress }: { industry: string; progress: n
   );
 }
 
-// 3D ROI Visualization - Simplified
+// 3D ROI Visualization
 function ROIVisualization({ scrollProgress }: { scrollProgress: number }) {
   const groupRef = useRef<THREE.Group>(null);
   
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.3;
+      groupRef.current.scale.setScalar(1 + scrollProgress * 0.5);
     }
   });
 
@@ -100,7 +112,7 @@ function ROIVisualization({ scrollProgress }: { scrollProgress: number }) {
           transparent 
           opacity={0.7}
           emissive="#06b6d4"
-          emissiveIntensity={0.2}
+          emissiveIntensity={0.2 + scrollProgress * 0.3}
         />
       </Sphere>
       
@@ -156,10 +168,11 @@ export default function ThreeScene({
   industry: string; 
 }) {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full absolute inset-0">
       <Canvas
         camera={{ position: [0, 2, 8], fov: 75 }}
-        style={{ background: 'transparent' }}
+        style={{ background: 'transparent', width: '100%', height: '100%' }}
+        gl={{ antialias: true, alpha: true }}
       >
         <Scene scrollProgress={scrollProgress} industry={industry} />
       </Canvas>
