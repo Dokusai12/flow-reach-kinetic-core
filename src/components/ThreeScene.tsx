@@ -3,49 +3,32 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Text, Sphere, Box, Torus, useScroll } from '@react-three/drei';
 import * as THREE from 'three';
 
-// 3D Data Flow Particles
+// 3D Data Flow Particles - Simplified
 function DataParticles({ scrollProgress }: { scrollProgress: number }) {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const count = 1000;
+  const groupRef = useRef<THREE.Group>(null);
   
-  const { positions, colors } = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    
-    for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
-      
-      colors[i * 3] = 0.2 + Math.random() * 0.8; // R
-      colors[i * 3 + 1] = 0.8 + Math.random() * 0.2; // G
-      colors[i * 3 + 2] = 1; // B
-    }
-    
-    return { positions, colors };
-  }, []);
-
   useFrame((state) => {
-    if (meshRef.current) {
-      const time = state.clock.getElapsedTime();
-      const positions = meshRef.current.geometry.attributes.position.array as Float32Array;
-      
-      for (let i = 0; i < count; i++) {
-        const i3 = i * 3;
-        positions[i3 + 1] += Math.sin(time + i * 0.01) * 0.01 * scrollProgress;
-        positions[i3] += Math.cos(time + i * 0.01) * 0.005 * scrollProgress;
-      }
-      
-      meshRef.current.geometry.attributes.position.needsUpdate = true;
-      meshRef.current.rotation.y = time * 0.1;
+    if (groupRef.current) {
+      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
     }
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <sphereGeometry args={[0.02, 8, 8]} />
-      <meshBasicMaterial color="#06b6d4" transparent opacity={0.6} />
-    </instancedMesh>
+    <group ref={groupRef}>
+      {Array.from({ length: 50 }).map((_, i) => (
+        <Sphere
+          key={i}
+          args={[0.05, 8, 8]}
+          position={[
+            (Math.random() - 0.5) * 20,
+            (Math.random() - 0.5) * 20,
+            (Math.random() - 0.5) * 20
+          ]}
+        >
+          <meshBasicMaterial color="#06b6d4" transparent opacity={0.6} />
+        </Sphere>
+      ))}
+    </group>
   );
 }
 
@@ -98,7 +81,7 @@ function BusinessProcess({ industry, progress }: { industry: string; progress: n
   );
 }
 
-// 3D ROI Visualization
+// 3D ROI Visualization - Simplified
 function ROIVisualization({ scrollProgress }: { scrollProgress: number }) {
   const groupRef = useRef<THREE.Group>(null);
   
@@ -110,21 +93,6 @@ function ROIVisualization({ scrollProgress }: { scrollProgress: number }) {
 
   return (
     <group ref={groupRef}>
-      {/* Money flowing up */}
-      {[...Array(20)].map((_, i) => (
-        <Box
-          key={i}
-          args={[0.1, 0.3, 0.1]}
-          position={[
-            (Math.random() - 0.5) * 10,
-            -5 + (scrollProgress * 10) + (i * 0.5),
-            (Math.random() - 0.5) * 10
-          ]}
-        >
-          <meshStandardMaterial color="#22c55e" transparent opacity={0.8} />
-        </Box>
-      ))}
-      
       {/* Central ROI sphere */}
       <Sphere args={[1, 32, 32]} position={[0, 0, 0]}>
         <meshStandardMaterial 
