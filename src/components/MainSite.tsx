@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
-import AdvancedThreeScene from "./AdvancedThreeScene";
+import MasterclassThreeScene from "./MasterclassThreeScene";
 import ErrorBoundary from "./ErrorBoundary";
 import logo from "@/assets/flowreach-logo.png";
 import { gsap } from "gsap";
@@ -126,7 +126,7 @@ const MainSite = () => {
       {/* Fixed 3D Background */}
       <div className="fixed inset-0 z-0 w-full h-full">
         <ErrorBoundary>
-          <AdvancedThreeScene 
+          <MasterclassThreeScene 
             scrollProgress={scrollProgress} 
             industry={selectedIndustry || "sales"} 
             mousePos={mousePosition}
